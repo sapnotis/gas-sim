@@ -1,10 +1,12 @@
 #include <iostream>
 using std::cin, std::cout, std::endl;
-#include "gas.hpp"
 
 #include <cmath>
 #include <string>
 #include <sstream>
+
+#include "tools.hpp"
+#include "model.hpp"
 
 int main() {
 
@@ -12,9 +14,18 @@ int main() {
 
     cout << "INITIALISATION OR SMTH" << endl;
 
-    Gas gas;
+    Model model;
     for ( int i = 0; i < 1000; i++ )
-        gas.emplace_particle(rnd_Vector3d_direction() * 10, rnd_Vector3d_direction());
+        model.emplace_particle(rnd_Point3d_direction() * 10, rnd_Point3d_direction());
+
+    model.emplace_rect_wall({0, 20, 0}, false, {10, 0, 0}, {0, 0, 10});
+    model.emplace_rect_wall({0, -20, 0}, false, {10, 0, 0}, {0, 0, 10});
+
+    model.emplace_rect_wall({20, 0, 0}, false, {0, 0, 10}, {0, 10, 0});
+    model.emplace_rect_wall({-20, 0, 0}, false, {0, 0, 10}, {0, 10, 0});
+
+    model.emplace_rect_wall({0, 0, 20}, false, {0, 10, 0}, {10, 0, 0});
+    model.emplace_rect_wall({0, 0, -20}, false, {0, 10, 0}, {10, 0, 0});
 
     // ============================== WINDOW ==============================
 
@@ -50,7 +61,7 @@ int main() {
                     window.close();
 
                 if (event.key.code == sf::Keyboard::R)
-                    gas.resetYawPitch();
+                    model.resetYawPitch();
                 
                 if (event.key.code == sf::Keyboard::Space)
                     do_ticks = !do_ticks;
@@ -58,24 +69,24 @@ int main() {
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            gas.addYaw( delta_angle );
+            model.addYaw( delta_angle );
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            gas.addYaw( - delta_angle );
+            model.addYaw( - delta_angle );
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            gas.addPitch( - delta_angle );
+            model.addPitch( - delta_angle );
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            gas.addPitch( delta_angle );
+            model.addPitch( delta_angle );
 
         while (since_last_tick > MSPT) {
 
             since_last_tick -= MSPT;
             if ( do_ticks )
-                gas.tick();
+                model.tick();
         }
 
         window.clear(sf::Color(3, 16, 25));
 
-        gas.display(window);
+        model.display(window);
         
         window.display();
     }

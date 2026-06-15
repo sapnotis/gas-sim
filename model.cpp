@@ -1,4 +1,6 @@
-#include "gas.hpp"
+#include "model.hpp"
+#include "tools.hpp"
+#include "walls.hpp"
 
 #include <vector>
 using std::vector;
@@ -10,15 +12,19 @@ using std::vector;
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-Gas::Gas() : yaw(0), pitch(0) { }
+Model::Model() : yaw(0), pitch(0), scale(100) { }
 
-Gas::~Gas() { }
+Model::~Model() { }
 
-Particle* Gas::emplace_particle(Vector3d coords, Vector3d velocity) {   
+Particle* Model::emplace_particle(Point3d coords, Point3d velocity) {   
     return &( particles.emplace_front(coords, velocity) );
 }
 
-bool Gas::erase_particle(Particle* particle) {
+Wall* Model::emplace_rect_wall(Point3d midpoint, bool movable, Point3d first_edge, Point3d second_edge) {
+    return &( walls.emplace_back(midpoint, movable, first_edge, second_edge) );
+}
+
+bool Model::erase_particle(Particle* particle) {
     
     auto it = particles.begin();
     while ( it != particles.end() && &(*it) != particle )
@@ -31,7 +37,20 @@ bool Gas::erase_particle(Particle* particle) {
     return 0;
 }
 
-vector<Particle*> Gas::getParticles() {
+bool Model::erase_rect_wall(RectangularWall* wall) {
+
+    auto it = walls.begin();
+    while ( it != walls.end() && &(*it) != wall )
+        it++;
+    
+    if ( it != walls.end() )
+        return 1;
+
+    walls.erase(it);
+    return 0;
+}
+
+vector<Particle*> Model::getParticles() {
     std::vector<Particle*> particle_ptrs;
 
     for ( auto it = particles.begin(); it != particles.end(); it++ )
@@ -40,20 +59,20 @@ vector<Particle*> Gas::getParticles() {
     return particle_ptrs;
 }
 
-Particle::Particle(Vector3d coords, Vector3d velocity)
-    : coords(coords), velocity(velocity) { };
+Particle::Particle(Point3d coords, Point3d velocity)
+    : coords(coords), velocity(velocity) { }
 
-Particle::~Particle() { };
+Particle::~Particle() { }
 
 // V3 and SFML
 
-void Gas::tick() {
+void Model::tick() {
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ )
         particle->update_coords();
 }
 
-void Gas::display(sf::RenderWindow& window) {
+void Model::display(sf::RenderWindow& window) {
 
     if ( particles.empty() )
         return;
@@ -76,19 +95,18 @@ void Gas::display(sf::RenderWindow& window) {
     }
     float maxdist = std::sqrt(maxdist_sqr);
 
-    float scale;
-    if ( window_center.y < window_center.x )
-        scale = 0.9f * window_center.y / maxdist;
-    else
-        scale = 0.9f * window_center.x / maxdist;
+    // if ( window_center.y < window_center.x )
+    //     scale = 0.9f * window_center.y / maxdist;
+    // else
+    //     scale = 0.9f * window_center.x / maxdist;
 
-    std::map<Particle*, Vector3d> nodes_window_coords;
+    std::map<Particle*, Point3d> nodes_window_coords;
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ )
         nodes_window_coords[ &(*particle) ] = calc_window_coords( particle->getCoords(), scale );
 
-    Vector3d small_corner = {0, 0, 0};
-    Vector3d big_corner = {0, 0, 0};
+    Point3d small_corner = {0, 0, 0};
+    Point3d big_corner = {0, 0, 0};
 
     for ( auto [n, coords] : nodes_window_coords ) {
 
@@ -124,17 +142,27 @@ void Gas::display(sf::RenderWindow& window) {
 
         display_point( window, window_center, nodes_window_coords[ &(*particle) ], NodeRadius, color );
     }
+
+    // for ( auto wall = walls.begin(); wall != walls.end(); wall++ ) {
+
+    //     sf::Color color = depth_shading(
+    //         ( big_corner.z - nodes_window_coords.at( &(*particle) ).z ) / ( 2*maxdist*scale ),
+    //         default_color
+    //     );
+
+    //     display_point( window, window_center, nodes_window_coords[ &(*particle) ], NodeRadius, color );
+    // }
 }
 
-Vector3d Gas::calc_window_coords(Vector3d coords, float scale) {
+Point3d Model::calc_window_coords(Point3d coords, float scale) {
 
-    Vector3d yaw_coords = {
+    Point3d yaw_coords = {
         coords.x * std::cos( yaw ) - coords.z * std::sin( yaw ),
         coords.y,
         coords.x * std::sin( yaw ) + coords.z * std::cos( yaw )
     };
 
-    Vector3d final_coords = {
+    Point3d final_coords = {
         yaw_coords.x,
         yaw_coords.y * std::cos( pitch ) - yaw_coords.z * std::sin( pitch ),
         yaw_coords.y * std::sin( pitch ) + yaw_coords.z * std::cos( pitch )
@@ -147,38 +175,11 @@ Vector3d Gas::calc_window_coords(Vector3d coords, float scale) {
     return final_coords;
 }
 
-/*
-void Gas::display_grid(sf::RenderWindow& window, sf::Color grid_color) {
-
-    sf::Vector2f window_center = { 0.5f * window.getSize().x, 0.5f * window.getSize().y };
-
-    // circumscribed parallelogram (is this even a word? circumscribed)
-    std::map<int, Vector3d> corners;
-
-    // big brain bool logic
-    for ( int i = 0; i < 8; i++ ) {
-        corners[i] =
-            { (i % 2) * small_corner.x + !(i % 2) * big_corner.x,
-            (i/2 % 2) * small_corner.y + !(i/2 % 2) * big_corner.y,
-            (i/4 % 8) * small_corner.z + !(i/4 % 2) * big_corner.z };
-    }
-
-    for ( int i = 0; i < 4; i ++ )
-        display_line( window, window_center, corners[i], corners[i+4], grid_color, grid_color );
-    for ( int i = 0; i < 4; i ++ )
-        display_line( window, window_center, corners[2*i], corners[2*i+1], grid_color, grid_color );
-    for ( int i = 0; i < 2; i ++ )
-        display_line( window, window_center, corners[i], corners[i+2], grid_color, grid_color );
-    for ( int i = 4; i < 6; i ++ )
-        display_line( window, window_center, corners[i], corners[i+2], grid_color, grid_color );
-}
-*/
-
-void Gas::display_xyz_axes(sf::RenderWindow& window, float scale) {
+void Model::display_xyz_axes(sf::RenderWindow& window, float scale) {
 
     sf::Vector2f xyz_compass_pos = { 0.15f * window.getSize().x, 0.8f * window.getSize().y };
     
-    std::map<int, Vector3d> others;
+    std::map<int, Point3d> others;
 
     others[0] = calc_window_coords( {0, 0, 0}, scale );
     float dir_len = 100 / scale;
@@ -193,5 +194,6 @@ void Gas::display_xyz_axes(sf::RenderWindow& window, float scale) {
 
 void Particle::update_coords() {
 
+    // big brain walls collision
     coords += velocity;
 }

@@ -4,14 +4,14 @@ SFMLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: main
 
-main: main.o gas.o tools.o
-	$(C) main.o gas.o tools.o -o main $(OPT) $(CFLAGS) $(SFMLFLAGS)
+main: main.o model.o walls.o tools.o
+	$(C) build/main.o build/model.o build/walls.o build/tools.o -o main $(OPT) $(CFLAGS) $(SFMLFLAGS)
 
 %.o: %.cpp
-	$(C) -c $< -o $@ $(OPT) $(CFLAGS) $(SFMLFLAGS) $(CFLAGS)
+	$(C) -c $< -o build/$@ $(OPT) $(CFLAGS) $(SFMLFLAGS) $(CFLAGS)
 
 clean:
-	rm -f *.o main
+	rm -f build/*.o main
 
 run:
 	./main

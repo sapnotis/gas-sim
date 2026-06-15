@@ -14,9 +14,9 @@ double drand() {
     return value;
 }
 
-Vector3d rnd_Vector3d_direction() {
+Point3d rnd_Point3d_direction() {
 
-    Vector3d vec = { drand(), drand(), drand() };
+    Point3d vec = { drand(), drand(), drand() };
 
     // I'm so sorry
     if ( !vec.x && !vec.y && !vec.z )
@@ -25,7 +25,7 @@ Vector3d rnd_Vector3d_direction() {
     return vec;
 }
 
-double len_squared(Vector3d vec) {
+double len_squared(Point3d vec) {
     return (
         vec.x * vec.x
         + vec.y * vec.y
@@ -47,7 +47,7 @@ float perspective_multiplier(double z) {
     return ( perspective_distance / ( perspective_distance - z ) );
 }
 
-void display_point(sf::RenderWindow& window, sf::Vector2f window_center, Vector3d coords, float RadiusInPixels, sf::Color color) {
+void display_point(sf::RenderWindow& window, sf::Vector2f window_center, Point3d coords, float RadiusInPixels, sf::Color color) {
     
     coords.x *= perspective_multiplier(coords.z);
     coords.y *= perspective_multiplier(coords.z);
@@ -59,7 +59,7 @@ void display_point(sf::RenderWindow& window, sf::Vector2f window_center, Vector3
     window.draw(circle);
 }
 
-void display_line(sf::RenderWindow& window, sf::Vector2f window_center, Vector3d c1, Vector3d c2, sf::Color col1, sf::Color col2) {
+void display_line(sf::RenderWindow& window, sf::Vector2f window_center, Point3d c1, Point3d c2, sf::Color col1, sf::Color col2) {
 
     c1.x *= perspective_multiplier(c1.z);
     c1.y *= perspective_multiplier(c1.z);
