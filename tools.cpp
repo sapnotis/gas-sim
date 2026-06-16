@@ -35,9 +35,10 @@ double len_squared(Point3d vec) {
 
 sf::Color depth_shading(float depth_0to1, const sf::Color& color) {
     sf::Color shaded_color = color;
-    shaded_color.r *= 1 - 0.8*depth_0to1;
-    shaded_color.g *= 1 - 0.8*depth_0to1;
-    shaded_color.b *= 1 - 0.8*depth_0to1;
+    // shaded_color.r *= 1 - 0.8*depth_0to1;
+    // shaded_color.g *= 1 - 0.8*depth_0to1;
+    // shaded_color.b *= 1 - 0.8*depth_0to1;
+    shaded_color.a = 255 - 255*depth_0to1;
     return shaded_color;
 }
 

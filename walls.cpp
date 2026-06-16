@@ -1,6 +1,7 @@
 #include "walls.hpp"
 
-#include <map>
+#include "model.hpp"
+#include "tools.hpp"
 
 bool RectangularWall::does_collide(const Vector3d& trace) {
 
@@ -9,4 +10,33 @@ bool RectangularWall::does_collide(const Vector3d& trace) {
     if ( ( trace.origin[coord_index] - midpoint[coord_index] ) * ( trace.end[coord_index] - midpoint[coord_index] ) < 0 )
         return true;
     return false;
-};
+}
+
+void RectangularWall::update_coords(std::list<Particle>& particles) {
+
+    int coord_index = (int)axis;
+
+    if ( midpoint[coord_index] < -18 || midpoint[coord_index] > 20 )
+        velocity *= -1;
+
+    midpoint[coord_index] += velocity;
+
+    for ( auto it = particles.begin(); it != particles.end(); it++ ) {
+
+        Vector3d relative_particle_track;
+
+        relative_particle_track.end = relative_particle_track.origin = it->getCoords();
+        relative_particle_track.end[coord_index] += velocity;
+
+        if ( does_collide(relative_particle_track) ) {
+
+            Point3d vel = it->getVelocity();
+            vel[coord_index] = 2*velocity - vel[coord_index];
+            it->set_velocity(vel);
+
+            Point3d crd = it->getCoords();
+            crd[coord_index] =  2*midpoint[coord_index] - crd[coord_index];
+            it->set_coords(crd);
+        }
+    }
+}

@@ -8,6 +8,7 @@ using std::cin, std::cout, std::endl;
 #include "tools.hpp"
 #include "model.hpp"
 #include "walls.hpp"
+#include "defs.hpp"
 
 int main() {
 
@@ -16,8 +17,8 @@ int main() {
     cout << "INITIALISATION OR SMTH" << endl;
 
     Model model;
-    for ( int i = 0; i < 1024; i++ )
-        model.emplace_particle( Point3d({0, 0, 0}), rnd_Point3d_direction() * 2 );
+    for ( int i = 0; i < 8; i++ )
+        model.emplace_particle( Point3d({0, 0, 0}), rnd_Point3d_direction() );
 
     model.emplace_rect_wall({20, 0, 0}, (orthogonal_axis)0, 20, 0);
     model.emplace_rect_wall({-20, 0, 0}, (orthogonal_axis)0, 20, 0);
@@ -27,6 +28,8 @@ int main() {
 
     model.emplace_rect_wall({0, 0, 20}, (orthogonal_axis)2, 20, 0);
     model.emplace_rect_wall({0, 0, -20}, (orthogonal_axis)2, 20, 0);
+
+    model.getWalls().front()->velocity = -0.5f;
 
     // ============================== WINDOW ==============================
     
@@ -43,8 +46,8 @@ int main() {
 
     while (window.isOpen()) {
 
-        sf::Time dt = clock.restart();
-        since_last_tick += dt;
+        sf::Time deltat = clock.restart();
+        since_last_tick += deltat;
 
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -85,7 +88,7 @@ int main() {
                 model.tick();
         }
 
-        window.clear(sf::Color(3, 16, 25));
+        window.clear(bc_color);
 
         model.display(window);
         

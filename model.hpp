@@ -17,6 +17,9 @@ using std::map;
 class Model;
 class Particle;
 
+class RectangularWall;
+enum class orthogonal_axis;
+
 class Model
 {
 private:
@@ -27,7 +30,7 @@ private:
     float scale;
 
 public:
-    Model() : yaw(0), pitch(0), scale(14) { };
+    Model() : yaw(0), pitch(0), scale(10) { };
     ~Model() { };
 
     Particle* emplace_particle(Point3d coords, Point3d velocity);
@@ -37,6 +40,7 @@ public:
     bool erase_rect_wall(RectangularWall* wall);
 
     vector<Particle*> getParticles();
+    vector<RectangularWall*> getWalls();
     
     // V3 and SFML
 
@@ -72,7 +76,7 @@ public:
     void set_velocity(Point3d vel) { velocity = vel; };
     void add_velocity(Point3d dvel) { velocity += dvel; };
 
-    void update_coords(const vector<RectangularWall>& walls);
+    void update_coords(vector<RectangularWall>& walls);
 };
 
 #endif

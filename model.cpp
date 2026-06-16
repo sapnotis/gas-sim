@@ -55,6 +55,15 @@ vector<Particle*> Model::getParticles() {
     return particle_ptrs;
 }
 
+vector<RectangularWall*> Model::getWalls() {
+    std::vector<RectangularWall*> wall_ptrs;
+
+    for ( auto it = rect_walls.begin(); it != rect_walls.end(); it++ )
+        wall_ptrs.push_back( &(*it) );
+
+    return wall_ptrs;
+}
+
 Particle::Particle(Point3d coords, Point3d velocity)
     : coords(coords), velocity(velocity) { }
 
@@ -63,6 +72,9 @@ Particle::~Particle() { }
 // V3 and SFML
 
 void Model::tick() {
+
+    for ( auto wall = rect_walls.begin(); wall != rect_walls.end(); wall++ )
+        wall->update_coords(particles);
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ )
         particle->update_coords(rect_walls);
@@ -126,9 +138,6 @@ void Model::display(sf::RenderWindow& window) {
 
     display_xyz_axes(window);
 
-    float NodeRadius = 2;
-    sf::Color default_color = sf::Color::White;
-
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ ) {
 
         sf::Color visible_color = depth_shading(
@@ -143,6 +152,9 @@ void Model::display(sf::RenderWindow& window) {
 
         Point3d mid = rect_wall->midpoint;
         Point3d fir, sec;
+        sf::Color wall_color = default_color;
+        if ( rect_wall->velocity )
+            wall_color =  sf::Color::Cyan;
 
         switch ( static_cast<int>(rect_wall->axis) )
         {
@@ -163,19 +175,19 @@ void Model::display(sf::RenderWindow& window) {
 
         display_line( window, window_center,
             calc_window_coords( mid + fir + sec ), calc_window_coords( mid + fir - sec ),
-            default_color, default_color
+            wall_color, wall_color
         );
         display_line( window, window_center,
             calc_window_coords( mid + fir - sec ), calc_window_coords( mid - fir - sec ),
-            default_color, default_color
+            wall_color, wall_color
         );
         display_line( window, window_center,
             calc_window_coords( mid - fir - sec ), calc_window_coords( mid - fir + sec ),
-            default_color, default_color
+            wall_color, wall_color
         );
         display_line( window, window_center,
             calc_window_coords( mid - fir + sec ), calc_window_coords( mid + fir + sec ),
-            default_color, default_color
+            wall_color, wall_color
         );
     }
 }
@@ -218,16 +230,27 @@ void Model::display_xyz_axes(sf::RenderWindow& window) {
     display_line( window, xyz_compass_pos, others[0], others[1], sf::Color::Red, sf::Color::Red );
 }
 
-void Particle::update_coords(const vector<RectangularWall>& walls) {
+void Particle::update_coords(vector<RectangularWall>& walls) {
 
     Vector3d track = { coords, coords += velocity * dt };
 
-    for ( RectangularWall wall : walls ) {
-        int coord_index = (int)(wall.axis);
+    bool may_collide = true;
+    int collision_counter = 0;
 
-        if ( wall.does_collide(track) ) {
-            coords[coord_index] = 2*( wall.midpoint[coord_index] ) - coords[coord_index];
-            velocity[coord_index] *= -1;
+    while ( may_collide && collision_counter < 32 ) {
+
+        may_collide = false;
+
+        for ( RectangularWall wall : walls ) {
+            int coord_index = (int)(wall.axis);
+
+            if ( wall.does_collide(track) ) {
+                may_collide = true;
+                collision_counter++;
+                velocity[coord_index] = 2*wall.velocity - velocity[coord_index];
+                coords[coord_index] = 2*( wall.midpoint[coord_index] ) - coords[coord_index];
+                track.end = coords;
+            }
         }
     }
 }
