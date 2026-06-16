@@ -7,6 +7,7 @@ using std::cin, std::cout, std::endl;
 
 #include "tools.hpp"
 #include "model.hpp"
+#include "walls.hpp"
 
 int main() {
 
@@ -15,20 +16,20 @@ int main() {
     cout << "INITIALISATION OR SMTH" << endl;
 
     Model model;
-    for ( int i = 0; i < 1000; i++ )
-        model.emplace_particle(rnd_Point3d_direction() * 10, rnd_Point3d_direction());
+    for ( int i = 0; i < 1024; i++ )
+        model.emplace_particle( Point3d({0, 0, 0}), rnd_Point3d_direction() * 2 );
 
-    model.emplace_rect_wall({0, 20, 0}, false, {10, 0, 0}, {0, 0, 10});
-    model.emplace_rect_wall({0, -20, 0}, false, {10, 0, 0}, {0, 0, 10});
+    model.emplace_rect_wall({20, 0, 0}, (orthogonal_axis)0, 20, 0);
+    model.emplace_rect_wall({-20, 0, 0}, (orthogonal_axis)0, 20, 0);
 
-    model.emplace_rect_wall({20, 0, 0}, false, {0, 0, 10}, {0, 10, 0});
-    model.emplace_rect_wall({-20, 0, 0}, false, {0, 0, 10}, {0, 10, 0});
+    model.emplace_rect_wall({0, 20, 0}, (orthogonal_axis)1, 20, 0);
+    model.emplace_rect_wall({0, -20, 0}, (orthogonal_axis)1, 20, 0);
 
-    model.emplace_rect_wall({0, 0, 20}, false, {0, 10, 0}, {10, 0, 0});
-    model.emplace_rect_wall({0, 0, -20}, false, {0, 10, 0}, {10, 0, 0});
+    model.emplace_rect_wall({0, 0, 20}, (orthogonal_axis)2, 20, 0);
+    model.emplace_rect_wall({0, 0, -20}, (orthogonal_axis)2, 20, 0);
 
     // ============================== WINDOW ==============================
-
+    
     bool do_ticks = false;
     const int FPS = 60;
     const double delta_angle = 0.05;

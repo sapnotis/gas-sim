@@ -1,10 +1,10 @@
 #include "model.hpp"
 #include "tools.hpp"
 #include "walls.hpp"
+#include "defs.hpp"
 
 #include <vector>
 using std::vector;
-#include <list>
 #include <algorithm>
 #include <map>
 #include <cmath>
@@ -12,16 +12,12 @@ using std::vector;
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-Model::Model() : yaw(0), pitch(0), scale(100) { }
-
-Model::~Model() { }
-
 Particle* Model::emplace_particle(Point3d coords, Point3d velocity) {   
     return &( particles.emplace_front(coords, velocity) );
 }
 
-Wall* Model::emplace_rect_wall(Point3d midpoint, bool movable, Point3d first_edge, Point3d second_edge) {
-    return &( walls.emplace_back(midpoint, movable, first_edge, second_edge) );
+RectangularWall* Model::emplace_rect_wall(Point3d midpoint, orthogonal_axis axis, double radius, double velocity) {
+    return &( rect_walls.emplace_back(midpoint, axis, radius, velocity) );
 }
 
 bool Model::erase_particle(Particle* particle) {
@@ -39,14 +35,14 @@ bool Model::erase_particle(Particle* particle) {
 
 bool Model::erase_rect_wall(RectangularWall* wall) {
 
-    auto it = walls.begin();
-    while ( it != walls.end() && &(*it) != wall )
+    auto it = rect_walls.begin();
+    while ( it != rect_walls.end() && &(*it) != wall )
         it++;
     
-    if ( it != walls.end() )
+    if ( it != rect_walls.end() )
         return 1;
 
-    walls.erase(it);
+    rect_walls.erase(it);
     return 0;
 }
 
@@ -69,7 +65,7 @@ Particle::~Particle() { }
 void Model::tick() {
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ )
-        particle->update_coords();
+        particle->update_coords(rect_walls);
 }
 
 void Model::display(sf::RenderWindow& window) {
@@ -103,7 +99,7 @@ void Model::display(sf::RenderWindow& window) {
     std::map<Particle*, Point3d> nodes_window_coords;
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ )
-        nodes_window_coords[ &(*particle) ] = calc_window_coords( particle->getCoords(), scale );
+        nodes_window_coords[ &(*particle) ] = calc_window_coords( particle->getCoords() );
 
     Point3d small_corner = {0, 0, 0};
     Point3d big_corner = {0, 0, 0};
@@ -128,33 +124,63 @@ void Model::display(sf::RenderWindow& window) {
 
     // display
 
-    display_xyz_axes(window, scale);
+    display_xyz_axes(window);
 
     float NodeRadius = 2;
     sf::Color default_color = sf::Color::White;
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ ) {
 
-        sf::Color color = depth_shading(
+        sf::Color visible_color = depth_shading(
             ( big_corner.z - nodes_window_coords.at( &(*particle) ).z ) / ( 2*maxdist*scale ),
             default_color
         );
 
-        display_point( window, window_center, nodes_window_coords[ &(*particle) ], NodeRadius, color );
+        display_point( window, window_center, nodes_window_coords[ &(*particle) ], NodeRadius, visible_color );
     }
 
-    // for ( auto wall = walls.begin(); wall != walls.end(); wall++ ) {
+    for ( auto rect_wall = rect_walls.begin(); rect_wall != rect_walls.end(); rect_wall++ ) {
 
-    //     sf::Color color = depth_shading(
-    //         ( big_corner.z - nodes_window_coords.at( &(*particle) ).z ) / ( 2*maxdist*scale ),
-    //         default_color
-    //     );
+        Point3d mid = rect_wall->midpoint;
+        Point3d fir, sec;
 
-    //     display_point( window, window_center, nodes_window_coords[ &(*particle) ], NodeRadius, color );
-    // }
+        switch ( static_cast<int>(rect_wall->axis) )
+        {
+        case 0: {
+            fir = Point3d({0, 1, 0}) * rect_wall->radius;
+            sec = Point3d({0, 0, 1}) * rect_wall->radius;
+            break;
+        } case 1: {
+            fir = Point3d({0, 0, 1}) * rect_wall->radius;
+            sec = Point3d({1, 0, 0}) * rect_wall->radius;
+            break;
+        } default: {
+            fir = Point3d({1, 0, 0}) * rect_wall->radius;
+            sec = Point3d({0, 1, 0}) * rect_wall->radius;
+            break;
+        }
+        }
+
+        display_line( window, window_center,
+            calc_window_coords( mid + fir + sec ), calc_window_coords( mid + fir - sec ),
+            default_color, default_color
+        );
+        display_line( window, window_center,
+            calc_window_coords( mid + fir - sec ), calc_window_coords( mid - fir - sec ),
+            default_color, default_color
+        );
+        display_line( window, window_center,
+            calc_window_coords( mid - fir - sec ), calc_window_coords( mid - fir + sec ),
+            default_color, default_color
+        );
+        display_line( window, window_center,
+            calc_window_coords( mid - fir + sec ), calc_window_coords( mid + fir + sec ),
+            default_color, default_color
+        );
+    }
 }
 
-Point3d Model::calc_window_coords(Point3d coords, float scale) {
+Point3d Model::calc_window_coords(Point3d coords) {
 
     Point3d yaw_coords = {
         coords.x * std::cos( yaw ) - coords.z * std::sin( yaw ),
@@ -175,25 +201,33 @@ Point3d Model::calc_window_coords(Point3d coords, float scale) {
     return final_coords;
 }
 
-void Model::display_xyz_axes(sf::RenderWindow& window, float scale) {
+void Model::display_xyz_axes(sf::RenderWindow& window) {
 
     sf::Vector2f xyz_compass_pos = { 0.15f * window.getSize().x, 0.8f * window.getSize().y };
     
     std::map<int, Point3d> others;
 
-    others[0] = calc_window_coords( {0, 0, 0}, scale );
+    others[0] = calc_window_coords( {0, 0, 0} );
     float dir_len = 100 / scale;
-    others[1] = calc_window_coords( {dir_len, 0, 0}, scale );
-    others[2] = calc_window_coords( {0, dir_len, 0}, scale );
-    others[3] = calc_window_coords( {0, 0, dir_len}, scale );
+    others[1] = calc_window_coords( {dir_len, 0, 0} );
+    others[2] = calc_window_coords( {0, dir_len, 0} );
+    others[3] = calc_window_coords( {0, 0, dir_len} );
 
     display_line( window, xyz_compass_pos, others[0], others[3], sf::Color::Blue, sf::Color::Blue );
     display_line( window, xyz_compass_pos, others[0], others[2], sf::Color::Green, sf::Color::Green );
     display_line( window, xyz_compass_pos, others[0], others[1], sf::Color::Red, sf::Color::Red );
 }
 
-void Particle::update_coords() {
+void Particle::update_coords(const vector<RectangularWall>& walls) {
 
-    // big brain walls collision
-    coords += velocity;
+    Vector3d track = { coords, coords += velocity * dt };
+
+    for ( RectangularWall wall : walls ) {
+        int coord_index = (int)(wall.axis);
+
+        if ( wall.does_collide(track) ) {
+            coords[coord_index] = 2*( wall.midpoint[coord_index] ) - coords[coord_index];
+            velocity[coord_index] *= -1;
+        }
+    }
 }

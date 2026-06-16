@@ -21,19 +21,19 @@ class Model
 {
 private:
     list<Particle> particles;
-    vector<RectangularWall> walls; // no polymorphism today
+    vector<RectangularWall> rect_walls; // no polymorphism today
     float yaw;
     float pitch;
     float scale;
 
 public:
-    Model();
-    ~Model();
+    Model() : yaw(0), pitch(0), scale(14) { };
+    ~Model() { };
 
     Particle* emplace_particle(Point3d coords, Point3d velocity);
     bool erase_particle(Particle* particle);
 
-    Wall* emplace_rect_wall(Point3d midpoint, bool movable, Point3d first_edge, Point3d second_edge);
+    RectangularWall* emplace_rect_wall(Point3d midpoint, orthogonal_axis axis, double radius, double velocity);
     bool erase_rect_wall(RectangularWall* wall);
 
     vector<Particle*> getParticles();
@@ -43,13 +43,13 @@ public:
     void tick();
     void display(sf::RenderWindow& window);
 
-    Point3d calc_window_coords(Point3d coords, float scale);
+    Point3d calc_window_coords(Point3d coords);
 
     void addYaw(float dyaw) { yaw += dyaw; };
     void addPitch(float dpitch) { pitch += dpitch; };
     void resetYawPitch() { yaw = pitch = 0; };
     
-    void display_xyz_axes(sf::RenderWindow& window, float scale);
+    void display_xyz_axes(sf::RenderWindow& window);
 };
 
 class Particle
@@ -72,7 +72,7 @@ public:
     void set_velocity(Point3d vel) { velocity = vel; };
     void add_velocity(Point3d dvel) { velocity += dvel; };
 
-    void update_coords();
+    void update_coords(const vector<RectangularWall>& walls);
 };
 
 #endif

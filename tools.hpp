@@ -9,6 +9,24 @@ struct Point3d
     double y;
     double z;
 
+    const double& operator[](size_t index) const {
+        switch (index) {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            default: throw std::out_of_range("Coordinate index out of bounds");
+        }
+    };
+
+    double& operator[](size_t index) {
+        switch (index) {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            default: throw std::out_of_range("Coordinate index out of bounds");
+        }
+    };
+
     Point3d operator+(const Point3d& other) const {
         return {x + other.x, y + other.y, z + other.z};
     };

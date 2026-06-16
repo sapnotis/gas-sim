@@ -3,29 +3,24 @@
 
 #include "tools.hpp"
 
-class Wall
-{
-private:
-    Point3d midpoint;
-    bool movable;
-
-public:
-    Wall(Point3d midpoint, bool movable) : midpoint(midpoint), movable(movable) { };
-    virtual ~Wall() { };
-
-    virtual Vector3d collision_result(Vector3d trace) = 0;
+enum class orthogonal_axis {
+    X,
+    Y,
+    Z
 };
 
-class RectangularWall : public Wall
+class RectangularWall // no polymorph today
 {
-private:
-    Point3d first_edge;
-    Point3d second_edge;
 public:
-    RectangularWall(Point3d midpoint, bool movable, Point3d first_edge, Point3d second_edge) : Wall(midpoint, movable), first_edge(first_edge), second_edge(second_edge) { };
+    Point3d midpoint;
+    orthogonal_axis axis;
+    double radius;
+    double velocity;
+    
+    RectangularWall(Point3d midpoint, orthogonal_axis axis, double radius, double velocity) : midpoint(midpoint), axis(axis), radius(radius), velocity(velocity) { };
     ~RectangularWall() { };
 
-    Vector3d collision_result(Vector3d trace) override;
+    bool does_collide(const Vector3d& trace);
 };
 
 #endif

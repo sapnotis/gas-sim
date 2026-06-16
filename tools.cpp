@@ -31,20 +31,21 @@ double len_squared(Point3d vec) {
         + vec.y * vec.y
         + vec.z * vec.z
     );
-};
+}
 
 sf::Color depth_shading(float depth_0to1, const sf::Color& color) {
     sf::Color shaded_color = color;
-    shaded_color.r *= 1 - 0.75*depth_0to1;
-    shaded_color.g *= 1 - 0.75*depth_0to1;
-    shaded_color.b *= 1 - 0.75*depth_0to1;
+    shaded_color.r *= 1 - 0.8*depth_0to1;
+    shaded_color.g *= 1 - 0.8*depth_0to1;
+    shaded_color.b *= 1 - 0.8*depth_0to1;
     return shaded_color;
-};
+}
 
-const double perspective_distance = 1200.f;
+const double perspective_distance = 2000.f;
 
 float perspective_multiplier(double z) {
     return ( perspective_distance / ( perspective_distance - z ) );
+    // return 1 + 0*z;
 }
 
 void display_point(sf::RenderWindow& window, sf::Vector2f window_center, Point3d coords, float RadiusInPixels, sf::Color color) {
