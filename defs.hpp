@@ -1,4 +1,6 @@
-#define dt 1
+#define TPS 1000 // ticks per real second
+#define dt 1e-5 // sim seconds in one tick
+#define particle_mass 1.673e-27 // kg (hydrogen)
 
 #define NodeRadius 3
 

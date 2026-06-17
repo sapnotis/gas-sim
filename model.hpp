@@ -30,7 +30,7 @@ private:
     float scale;
 
 public:
-    Model() : yaw(0), pitch(0), scale(10) { };
+    Model() : yaw(0), pitch(0), scale(1200) { };
     ~Model() { };
 
     Particle* emplace_particle(Point3d coords, Point3d velocity);
@@ -54,6 +54,8 @@ public:
     void resetYawPitch() { yaw = pitch = 0; };
     
     void display_xyz_axes(sf::RenderWindow& window);
+
+    double get_kinenergy();
 };
 
 class Particle

@@ -2,6 +2,7 @@
 
 #include "model.hpp"
 #include "tools.hpp"
+#include "defs.hpp"
 
 bool RectangularWall::does_collide(const Vector3d& trace) {
 
@@ -16,10 +17,7 @@ void RectangularWall::update_coords(std::list<Particle>& particles) {
 
     int coord_index = (int)axis;
 
-    // if ( midpoint[coord_index] < -18 || midpoint[coord_index] > 20 )
-    //     velocity *= -1;
-
-    midpoint[coord_index] += velocity;
+    midpoint[coord_index] += velocity * dt;
 
     for ( auto it = particles.begin(); it != particles.end(); it++ ) {
 

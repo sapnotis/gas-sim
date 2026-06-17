@@ -18,31 +18,23 @@ int main() {
 
     Model model;
     for ( int i = 0; i < 256; i++ )
-        model.emplace_particle( Point3d({0, 0, 0}), rnd_Point3d_direction() );
+        model.emplace_particle( Point3d({0, 0, 0}), rnd_Point3d_direction() * 2500 );
 
-    model.emplace_rect_wall({20, 0, 0}, (orthogonal_axis)0, 20, 0);
-    model.emplace_rect_wall({-20, 0, 0}, (orthogonal_axis)0, 20, 0);
+    model.emplace_rect_wall( {0.1, 0, 0}, (orthogonal_axis)0, 0.2, -1 );
+    model.emplace_rect_wall( {-0.1, 0, 0}, (orthogonal_axis)0, 0.2, 1 );
 
-    model.emplace_rect_wall({0, 20, 0}, (orthogonal_axis)1, 20, 0);
-    model.emplace_rect_wall({0, -20, 0}, (orthogonal_axis)1, 20, 0);
+    model.emplace_rect_wall( {0, 0.1, 0}, (orthogonal_axis)1, 0.2, -1 );
+    model.emplace_rect_wall( {0, -0.1, 0}, (orthogonal_axis)1, 0.2, 1 );
 
-    model.emplace_rect_wall({0, 0, 20}, (orthogonal_axis)2, 20, 0);
-    model.emplace_rect_wall({0, 0, -20}, (orthogonal_axis)2, 20, 0);
-
-    model.getWalls()[0]->velocity = -0.125f;
-    model.getWalls()[1]->velocity = 0.125f;
-    model.getWalls()[2]->velocity = -0.125f;
-    
-    model.getWalls()[3]->velocity = 0.125f;
-    model.getWalls()[4]->velocity = -0.125f;
-    model.getWalls()[5]->velocity = 0.125f;
+    model.emplace_rect_wall( {0, 0, 0.1}, (orthogonal_axis)2, 0.2, -1 );
+    model.emplace_rect_wall( {0, 0, -0.1}, (orthogonal_axis)2, 0.2, 1 );
 
     // ============================== WINDOW ==============================
     
     bool do_ticks = false;
     const int FPS = 60;
     const double delta_angle = 0.05;
-    const sf::Time MSPT = sf::milliseconds(1000.f / 20.0f);
+    const sf::Time MSPT = sf::milliseconds(1000.f / TPS);
     
     sf::RenderWindow window( sf::VideoMode( 1600, 900 ), "Gas" );
     window.setFramerateLimit( FPS );

@@ -78,6 +78,8 @@ void Model::tick() {
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ )
         particle->update_coords(rect_walls);
+    
+    std::cout << get_kinenergy() << std::endl;
 }
 
 void Model::display(sf::RenderWindow& window) {
@@ -173,6 +175,19 @@ void Model::display(sf::RenderWindow& window) {
         }
         }
 
+        //  cross-like display
+
+        // display_line( window, window_center,
+        //     calc_window_coords( mid + fir ), calc_window_coords( mid - fir ),
+        //     wall_color, wall_color
+        // );
+        // display_line( window, window_center,
+        //     calc_window_coords( mid + sec ), calc_window_coords( mid - sec ),
+        //     wall_color, wall_color
+        // );
+
+        //  rectangle-like display
+
         display_line( window, window_center,
             calc_window_coords( mid + fir + sec ), calc_window_coords( mid + fir - sec ),
             wall_color, wall_color
@@ -228,6 +243,18 @@ void Model::display_xyz_axes(sf::RenderWindow& window) {
     display_line( window, xyz_compass_pos, others[0], others[3], sf::Color::Blue, sf::Color::Blue );
     display_line( window, xyz_compass_pos, others[0], others[2], sf::Color::Green, sf::Color::Green );
     display_line( window, xyz_compass_pos, others[0], others[1], sf::Color::Red, sf::Color::Red );
+}
+
+double Model::get_kinenergy() {
+    
+    double kinenergy = 0;
+
+    double half_mass = 0.5;
+
+    for ( Particle particle : particles )
+        kinenergy += half_mass * len_squared( particle.getVelocity() );
+
+    return kinenergy;
 }
 
 void Particle::update_coords(vector<RectangularWall>& walls) {
