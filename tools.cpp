@@ -45,11 +45,15 @@ sf::Color depth_shading(float depth_0to1, const sf::Color& color) {
 const double perspective_distance = 2000.f;
 
 float perspective_multiplier(double z) {
+    if ( z >= perspective_distance )
+        return 0;
     return ( perspective_distance / ( perspective_distance - z ) );
-    // return 1 + 0*z;
 }
 
 void display_point(sf::RenderWindow& window, sf::Vector2f window_center, Point3d coords, float RadiusInPixels, sf::Color color) {
+    
+    if ( coords.z >= perspective_distance )
+        return;
     
     coords.x *= perspective_multiplier(coords.z);
     coords.y *= perspective_multiplier(coords.z);
@@ -72,6 +76,7 @@ void display_line(sf::RenderWindow& window, sf::Vector2f window_center, Point3d 
         sf::Vertex( window_center + sf::Vector2f({(float)c1.x, (float)-c1.y}) ),
         sf::Vertex( window_center + sf::Vector2f({(float)c2.x, (float)-c2.y}) )
     };
+
     line[0].color = col1;
     line[1].color = col2;
     window.draw(line, 2, sf::Lines);

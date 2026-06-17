@@ -17,7 +17,7 @@ int main() {
     cout << "INITIALISATION OR SMTH" << endl;
 
     Model model;
-    for ( int i = 0; i < 8; i++ )
+    for ( int i = 0; i < 256; i++ )
         model.emplace_particle( Point3d({0, 0, 0}), rnd_Point3d_direction() );
 
     model.emplace_rect_wall({20, 0, 0}, (orthogonal_axis)0, 20, 0);
@@ -29,7 +29,13 @@ int main() {
     model.emplace_rect_wall({0, 0, 20}, (orthogonal_axis)2, 20, 0);
     model.emplace_rect_wall({0, 0, -20}, (orthogonal_axis)2, 20, 0);
 
-    model.getWalls().front()->velocity = -0.5f;
+    model.getWalls()[0]->velocity = -0.125f;
+    model.getWalls()[1]->velocity = 0.125f;
+    model.getWalls()[2]->velocity = -0.125f;
+    
+    model.getWalls()[3]->velocity = 0.125f;
+    model.getWalls()[4]->velocity = -0.125f;
+    model.getWalls()[5]->velocity = 0.125f;
 
     // ============================== WINDOW ==============================
     

@@ -237,7 +237,7 @@ void Particle::update_coords(vector<RectangularWall>& walls) {
     bool may_collide = true;
     int collision_counter = 0;
 
-    while ( may_collide && collision_counter < 32 ) {
+    while ( may_collide && collision_counter < 256 ) {
 
         may_collide = false;
 

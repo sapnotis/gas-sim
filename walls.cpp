@@ -16,8 +16,8 @@ void RectangularWall::update_coords(std::list<Particle>& particles) {
 
     int coord_index = (int)axis;
 
-    if ( midpoint[coord_index] < -18 || midpoint[coord_index] > 20 )
-        velocity *= -1;
+    // if ( midpoint[coord_index] < -18 || midpoint[coord_index] > 20 )
+    //     velocity *= -1;
 
     midpoint[coord_index] += velocity;
 
