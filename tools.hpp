@@ -62,7 +62,13 @@ struct Vector3d
 };
 
 double drand();
-Point3d rnd_Point3d_direction();
+Point3d cube_uniform_distribution();
+
+double maxwell(double sigma);
+Point3d maxwell_3d_distribution(double sigma);
+
+// double theta = (2.0 * k_B * T) / mass;
+// std::gamma_distribution<double> gamma(3.0 / 2.0, theta);
 
 double len_squared(Point3d vec);
 

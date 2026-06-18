@@ -73,13 +73,13 @@ Particle::~Particle() { }
 
 void Model::tick() {
 
+    std::cout << get_kinenergy() << "\t" << get_volume() << std::endl;
+    
     for ( auto wall = rect_walls.begin(); wall != rect_walls.end(); wall++ )
         wall->update_coords(particles);
 
     for ( auto particle = particles.begin(); particle != particles.end(); particle++ )
         particle->update_coords(rect_walls);
-    
-    std::cout << get_kinenergy() << std::endl;
 }
 
 void Model::display(sf::RenderWindow& window) {
@@ -249,12 +249,22 @@ double Model::get_kinenergy() {
     
     double kinenergy = 0;
 
-    double half_mass = 0.5;
-
+    double half_mass = PARTICLE_MASS / 2;
     for ( Particle particle : particles )
         kinenergy += half_mass * len_squared( particle.getVelocity() );
 
     return kinenergy;
+}
+
+double Model::get_volume() {
+    
+    double volume = 1;
+
+    volume *= rect_walls[0].midpoint[0] - rect_walls[1].midpoint[0];
+    volume *= rect_walls[2].midpoint[1] - rect_walls[3].midpoint[1];
+    volume *= rect_walls[4].midpoint[2] - rect_walls[5].midpoint[2];
+
+    return volume;
 }
 
 void Particle::update_coords(vector<RectangularWall>& walls) {

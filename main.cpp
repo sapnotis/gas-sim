@@ -16,18 +16,23 @@ int main() {
 
     cout << "INITIALISATION OR SMTH" << endl;
 
-    Model model;
-    for ( int i = 0; i < 256; i++ )
-        model.emplace_particle( Point3d({0, 0, 0}), rnd_Point3d_direction() * 2500 );
+    Model model(1000);
 
-    model.emplace_rect_wall( {0.1, 0, 0}, (orthogonal_axis)0, 0.2, -1 );
-    model.emplace_rect_wall( {-0.1, 0, 0}, (orthogonal_axis)0, 0.2, 1 );
+    double wall_velocity = 0.02;
+    double wall_size = 0.2;
 
-    model.emplace_rect_wall( {0, 0.1, 0}, (orthogonal_axis)1, 0.2, -1 );
-    model.emplace_rect_wall( {0, -0.1, 0}, (orthogonal_axis)1, 0.2, 1 );
+    model.emplace_rect_wall( {wall_size, 0, 0}, (orthogonal_axis)0, wall_size, -wall_velocity );
+    model.emplace_rect_wall( {-wall_size, 0, 0}, (orthogonal_axis)0, wall_size, 0 );
 
-    model.emplace_rect_wall( {0, 0, 0.1}, (orthogonal_axis)2, 0.2, -1 );
-    model.emplace_rect_wall( {0, 0, -0.1}, (orthogonal_axis)2, 0.2, 1 );
+    model.emplace_rect_wall( {0, wall_size, 0}, (orthogonal_axis)1, wall_size, 0 );
+    model.emplace_rect_wall( {0, -wall_size, 0}, (orthogonal_axis)1, wall_size, 0 );
+
+    model.emplace_rect_wall( {0, 0, wall_size}, (orthogonal_axis)2, wall_size, 0 );
+    model.emplace_rect_wall( {0, 0, -wall_size}, (orthogonal_axis)2, wall_size, 0 );
+
+    for ( int i = 0; i < 1024; i++ ) {
+        model.emplace_particle( Point3d({0, 0, 0}), maxwell_3d_distribution(0.05) );
+    }
 
     // ============================== WINDOW ==============================
     

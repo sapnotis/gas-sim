@@ -14,14 +14,28 @@ double drand() {
     return value;
 }
 
-Point3d rnd_Point3d_direction() {
+Point3d cube_uniform_distribution() {
 
     Point3d vec = { drand(), drand(), drand() };
+    return vec;
+}
 
-    // I'm so sorry
-    if ( !vec.x && !vec.y && !vec.z )
-        vec.x = 1;
+double maxwell(double sigma) {
 
+    std::random_device rd;
+    std::mt19937 engine( rd() );
+    std::normal_distribution<double> normal_dist(0.0, sigma);
+    double value = normal_dist(engine);
+    return value;
+}
+
+Point3d maxwell_3d_distribution(double sigma) {
+
+    std::random_device rd;
+    std::mt19937 engine( rd() );
+    std::normal_distribution<double> normal_dist(0.0, sigma);
+
+    Point3d vec = { normal_dist(engine), normal_dist(engine), normal_dist(engine) };
     return vec;
 }
 

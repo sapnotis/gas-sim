@@ -24,7 +24,7 @@ void RectangularWall::update_coords(std::list<Particle>& particles) {
         Vector3d relative_particle_track;
 
         relative_particle_track.end = relative_particle_track.origin = it->getCoords();
-        relative_particle_track.end[coord_index] += velocity;
+        relative_particle_track.end[coord_index] += velocity * dt;
 
         if ( does_collide(relative_particle_track) ) {
 
