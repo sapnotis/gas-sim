@@ -2,7 +2,8 @@
 
 #include "model.hpp"
 #include "tools.hpp"
-#include "defs.hpp"
+#include "config_keeper.hpp"
+#include "style_keeper.hpp"
 
 bool RectangularWall::does_collide(const Vector3d& trace) {
 
@@ -17,14 +18,14 @@ void RectangularWall::update_coords(std::list<Particle>& particles) {
 
     int coord_index = (int)axis;
 
-    midpoint[coord_index] += velocity * dt;
+    midpoint[coord_index] += velocity * Config_keeper::dt;
 
     for ( auto it = particles.begin(); it != particles.end(); it++ ) {
 
         Vector3d relative_particle_track;
 
         relative_particle_track.end = relative_particle_track.origin = it->getCoords();
-        relative_particle_track.end[coord_index] += velocity * dt;
+        relative_particle_track.end[coord_index] += velocity * Config_keeper::dt;
 
         if ( does_collide(relative_particle_track) ) {
 

@@ -1,9 +1,11 @@
-#define TPS 20 // ticks per real second
-#define dt 0.05 // sim seconds in one tick
-#define HOW_MANY_PARTICLES
+// #define TPS 20 // ticks per real second
+// #define dt 0.05 // sim seconds in one tick
+// #define HOW_MANY_PARTICLES
 
-#define k_B = 1.380649e-23
-#define PARTICLE_MASS 1.673e-27 // kg (hydrogen)
+// #define k_B = 1.380649e-23
+// #define PARTICLE_MASS 1.673e-27 // kg (hydrogen)
+
+
 
 #define NodeRadius 2
 //  brigt theme

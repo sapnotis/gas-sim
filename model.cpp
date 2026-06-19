@@ -1,10 +1,10 @@
 #include "model.hpp"
 #include "tools.hpp"
 #include "walls.hpp"
-#include "defs.hpp"
+#include "style_keeper.hpp"
+#include "config_keeper.hpp"
 
 #include <vector>
-using std::vector;
 #include <algorithm>
 #include <map>
 #include <cmath>
@@ -46,7 +46,7 @@ bool Model::erase_rect_wall(RectangularWall* wall) {
     return 0;
 }
 
-vector<Particle*> Model::getParticles() {
+std::vector<Particle*> Model::getParticles() {
     std::vector<Particle*> particle_ptrs;
 
     for ( auto it = particles.begin(); it != particles.end(); it++ )
@@ -55,7 +55,7 @@ vector<Particle*> Model::getParticles() {
     return particle_ptrs;
 }
 
-vector<RectangularWall*> Model::getWalls() {
+std::vector<RectangularWall*> Model::getWalls() {
     std::vector<RectangularWall*> wall_ptrs;
 
     for ( auto it = rect_walls.begin(); it != rect_walls.end(); it++ )
@@ -83,9 +83,6 @@ void Model::tick() {
 }
 
 void Model::display(sf::RenderWindow& window) {
-
-    if ( particles.empty() )
-        return;
     
     if ( yaw > 6.28f ) yaw -= 6.28f;
     if ( yaw < -6.28f ) yaw += 6.28f;
@@ -249,7 +246,7 @@ double Model::get_kinenergy() {
     
     double kinenergy = 0;
 
-    double half_mass = PARTICLE_MASS / 2;
+    double half_mass = Config_keeper::PARTICLE_MASS / 2;
     for ( Particle particle : particles )
         kinenergy += half_mass * len_squared( particle.getVelocity() );
 
@@ -269,12 +266,12 @@ double Model::get_volume() {
 
 void Particle::update_coords(vector<RectangularWall>& walls) {
 
-    Vector3d track = { coords, coords += velocity * dt };
+    Vector3d track = { coords, coords += velocity * Config_keeper::dt };
 
     bool may_collide = true;
     int collision_counter = 0;
 
-    while ( may_collide && collision_counter < 256 ) {
+    while ( may_collide && collision_counter < 1024 ) {
 
         may_collide = false;
 
