@@ -57,9 +57,12 @@ void Txt_handler::read_config() {
         counter++;
     }
 
+    Txt_handler::dt = 0.5 / Txt_handler::wall_velocity / 200;
+
     cout << "+ Config read successfully" << endl;
 
-    std::ofstream log("io/log_" + std::to_string(log_id) + ".txt", std::ios::trunc);
+    std::ofstream log("io/log_" + std::to_string(log_id) + ".txt");
+    log << "Wall vel: " << Txt_handler::wall_velocity << endl;
 
     if (!log.is_open()) {
         cout << "(!) Couldn't log to: io/log_" + std::to_string(log_id) + ".txt!" << endl;

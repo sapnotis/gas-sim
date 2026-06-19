@@ -75,11 +75,10 @@ Particle::~Particle() { }
 
 void Model::tick() {
 
-    std::cout << calc_pressure() << "\t" << get_volume() << "\t" << calc_temperature() << std::endl;
+    std::cout << get_volume() << "\t" << calc_temperature() << std::endl;
 
     Txt_handler::log(
-        std::to_string(calc_pressure()) + "\t"
-        + std::to_string(get_volume()) + "\t"
+        std::to_string(get_volume()) + "\t"
         + std::to_string(calc_temperature())
     );
     
@@ -161,7 +160,7 @@ void Model::display(sf::RenderWindow& window) {
         Point3d fir, sec;
         sf::Color wall_color = default_color;
         if ( rect_wall->velocity )
-            wall_color =  sf::Color::Cyan;
+            wall_color = moving_wall_color;
 
         switch ( static_cast<int>(rect_wall->axis) )
         {
