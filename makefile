@@ -4,8 +4,8 @@ SFMLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: main
 
-main: main.o model.o walls.o tools.o
-	$(C) build/main.o build/model.o build/walls.o build/tools.o -o main $(OPT) $(CFLAGS) $(SFMLFLAGS)
+main: main.o model.o walls.o tools.o config_keeper.o
+	$(C) build/main.o build/model.o build/walls.o build/tools.o build/config_keeper.o -o main $(OPT) $(CFLAGS) $(SFMLFLAGS)
 
 %.o: %.cpp
 	$(C) -c $< -o build/$@ $(OPT) $(CFLAGS) $(SFMLFLAGS) $(CFLAGS)

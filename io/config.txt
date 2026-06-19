@@ -1,0 +1,14 @@
+# Всё в системе СИ
+# Пустые строки и строки с # в начале не считаются
+
+# TPS, ticks per real second:
+    20
+# dt, sim seconds per tick:
+    0.1
+# HOW_MANY_PARTICLES DO YOU COUNT IT?:
+    1024
+
+# k_B:
+    1.380649e-23
+# PARTICLE_MASS:
+    1.673e-27

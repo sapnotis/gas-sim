@@ -17,6 +17,9 @@ int main() {
 
     cout << "INITIALISATION OR SMTH" << endl;
 
+    Config_keeper config_reader;
+    config_reader.read();
+
     Model model(1000);
 
     double wall_velocity = 0.02;
