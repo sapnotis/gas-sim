@@ -39,9 +39,12 @@ void Txt_handler::read_config() {
             ss >> Txt_handler::HOW_MANY_PARTICLES;
             break;
         case 4:
-            ss >> Txt_handler::k_B;
+            ss >> Txt_handler::wall_velocity;
             break;
         case 5:
+            ss >> Txt_handler::k_B;
+            break;
+        case 6:
             ss >> Txt_handler::PARTICLE_MASS;
             break;
         default: {
@@ -54,7 +57,16 @@ void Txt_handler::read_config() {
         counter++;
     }
 
-    cout << "HOW_MANY_PARTICLES: " << HOW_MANY_PARTICLES << endl;
+    cout << "+ Config read successfully" << endl;
+
+    std::ofstream log("io/log_" + std::to_string(log_id) + ".txt", std::ios::trunc);
+
+    if (!log.is_open()) {
+        cout << "(!) Couldn't log to: io/log_" + std::to_string(log_id) + ".txt!" << endl;
+        return;
+    }
+
+    log.close();
 
     config.close();
 }

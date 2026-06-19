@@ -3,14 +3,17 @@
 # Порядок переменных не менять
 
 # log_id, запишется в io/log_{log_id}.txt:
-    0
+    3
 
 # TPS, ticks per real second:
-    20
+    100
 # dt, sim seconds per tick:
-    0.1
+    0.005
 # HOW_MANY_PARTICLES DO YOU COUNT IT?:
-    1024
+    100000
+
+# wall velocity:
+    0.25
 
 # k_B:
 #    1.380649e-23

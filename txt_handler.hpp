@@ -14,6 +14,8 @@ public:
     static inline double dt = 1;
     static inline unsigned HOW_MANY_PARTICLES = 0;
 
+    static inline double wall_velocity = 0;
+
     static inline double k_B = 1;
     static inline double PARTICLE_MASS = 1;
 

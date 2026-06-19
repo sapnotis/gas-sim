@@ -9,8 +9,8 @@
 
 #define NodeRadius 2
 //  brigt theme
-// #define bc_color sf::Color(192, 192, 192)
-// #define default_color sf::Color(3, 16, 25)
+// #define bc_color sf::Color::White
+// #define default_color sf::Color::Black
 //  dark theme
 #define bc_color sf::Color(3, 16, 25)
 #define default_color sf::Color::White
