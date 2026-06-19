@@ -1,8 +1,14 @@
 #ifndef _PARCER_
 #define _PARCER_
 
-class Config_keeper
+#include <string>
+using std::string;
+
+class Txt_handler
 {
+private:
+    static inline int log_id = 0;
+    
 public:
     static inline unsigned TPS = 20;
     static inline double dt = 1;
@@ -11,10 +17,11 @@ public:
     static inline double k_B = 1;
     static inline double PARTICLE_MASS = 1;
 
-    Config_keeper() { };
-    ~Config_keeper() { };
+    Txt_handler() { };
+    ~Txt_handler() { };
 
-    void read();
+    void read_config();
+    static void log(string str);
 };
 
 #endif

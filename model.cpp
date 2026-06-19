@@ -1,8 +1,8 @@
 #include "model.hpp"
 #include "tools.hpp"
 #include "walls.hpp"
+#include "txt_handler.hpp"
 #include "style_keeper.hpp"
-#include "config_keeper.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -10,6 +10,8 @@
 #include <cmath>
 
 #include <iostream>
+#include <string>
+
 #include <SFML/Graphics.hpp>
 
 Particle* Model::emplace_particle(Point3d coords, Point3d velocity) {   
@@ -73,7 +75,13 @@ Particle::~Particle() { }
 
 void Model::tick() {
 
-    std::cout << get_kinenergy() << "\t" << get_volume() << std::endl;
+    std::cout << calc_pressure() << "\t" << get_volume() << "\t" << calc_temperature() << std::endl;
+
+    Txt_handler::log(
+        std::to_string(calc_pressure()) + "\t"
+        + std::to_string(get_volume()) + "\t"
+        + std::to_string(calc_temperature())
+    );
     
     for ( auto wall = rect_walls.begin(); wall != rect_walls.end(); wall++ )
         wall->update_coords(particles);
@@ -246,7 +254,7 @@ double Model::get_kinenergy() {
     
     double kinenergy = 0;
 
-    double half_mass = Config_keeper::PARTICLE_MASS / 2;
+    double half_mass = Txt_handler::PARTICLE_MASS / 2;
     for ( Particle particle : particles )
         kinenergy += half_mass * len_squared( particle.getVelocity() );
 
@@ -264,9 +272,28 @@ double Model::get_volume() {
     return volume;
 }
 
+double Model::calc_temperature() {
+
+    // U = 3/2 * N * k_B * T
+    double temperature = get_kinenergy() / ( 1.5 * particles.size() * Txt_handler::k_B );
+
+    return temperature;
+}
+
+double Model::calc_pressure() {
+
+    // P = n * k_B * T
+    // double pressure = ( particles.size() / get_volume() ) * Txt_handler::k_B * calc_temperature();
+
+    // U = 3/2 * (P * V) <--- quicker
+    double pressure = get_kinenergy() / ( 1.5 * get_volume() );
+
+    return pressure;
+}
+
 void Particle::update_coords(vector<RectangularWall>& walls) {
 
-    Vector3d track = { coords, coords += velocity * Config_keeper::dt };
+    Vector3d track = { coords, coords += velocity * Txt_handler::dt };
 
     bool may_collide = true;
     int collision_counter = 0;

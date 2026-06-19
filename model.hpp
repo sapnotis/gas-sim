@@ -57,6 +57,8 @@ public:
 
     double get_kinenergy();
     double get_volume();
+    double calc_temperature();
+    double calc_pressure();
 };
 
 class Particle

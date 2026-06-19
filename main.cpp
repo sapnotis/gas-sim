@@ -8,7 +8,7 @@ using std::cin, std::cout, std::endl;
 #include "tools.hpp"
 #include "model.hpp"
 #include "walls.hpp"
-#include "config_keeper.hpp"
+#include "txt_handler.hpp"
 #include "style_keeper.hpp"
 
 int main() {
@@ -17,8 +17,8 @@ int main() {
 
     cout << "INITIALISATION OR SMTH" << endl;
 
-    Config_keeper config_reader;
-    config_reader.read();
+    Txt_handler txt_handler;
+    txt_handler.read_config();
 
     Model model(1000);
 
@@ -34,7 +34,7 @@ int main() {
     model.emplace_rect_wall( {0, 0, wall_size}, (orthogonal_axis)2, wall_size, 0 );
     model.emplace_rect_wall( {0, 0, -wall_size}, (orthogonal_axis)2, wall_size, 0 );
 
-    for ( unsigned int i = 0; i < Config_keeper::HOW_MANY_PARTICLES; i++ ) {
+    for ( unsigned int i = 0; i < Txt_handler::HOW_MANY_PARTICLES; i++ ) {
         model.emplace_particle( Point3d({0, 0, 0}), maxwell_3d_distribution(0.05) );
     }
 
@@ -43,7 +43,7 @@ int main() {
     bool do_ticks = false;
     const int FPS = 60;
     const double delta_angle = 0.05;
-    const sf::Time MSPT = sf::milliseconds(1000.f / Config_keeper::TPS);
+    const sf::Time MSPT = sf::milliseconds(1000.f / Txt_handler::TPS);
     
     sf::RenderWindow window( sf::VideoMode( 1600, 900 ), "Gas" );
     window.setFramerateLimit( FPS );
