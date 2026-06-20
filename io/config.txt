@@ -3,7 +3,7 @@
 # Порядок переменных не менять
 
 # log_id, запишется в io/log_{log_id}.txt:
-    99
+    10
 
 # TPS, ticks per real second:
     100
@@ -13,7 +13,7 @@
     4096
 
 # wall velocity:
-    0.625
+    8
 
 # k_B:
 #    1.380649e-23

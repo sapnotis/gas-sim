@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-for log_id in [0, 1, 2, 3, 4, 5, 6, 7]:
+for log_id in [2, 4, 6, 8, 10]:
 
     with open(f"io/log_{log_id}.txt", "r") as f:
         content = f.read()
@@ -29,6 +29,7 @@ for log_id in [0, 1, 2, 3, 4, 5, 6, 7]:
     plt.plot(np.array(logV, float), np.array(logT, float), '.r', label="simulated")
     plt.plot(np.array(logV, float), np.array(logTt, float), 'b', label="theory")
 
+    plt.title("Температура в процессе расширения")
     plt.xlabel('ln Volume')
     plt.ylabel('ln Temperature')
 

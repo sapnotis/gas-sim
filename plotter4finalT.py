@@ -9,7 +9,7 @@ i = []
 T_final = []
 logT_final = []
 
-for log_id in [0, 1, 2, 3, 4, 5, 6, 7]:
+for log_id in range(0, 13):
 
     with open(f"io/log_{log_id}.txt", "r") as f:
         content = f.read()
@@ -24,21 +24,16 @@ for log_id in [0, 1, 2, 3, 4, 5, 6, 7]:
 
 plt.figure(figsize=(10, 6))
 
-# plt.plot(np.array(i, int), np.array(T_final, float), '.r', label="T_final")
-# plt.plot(np.array(i, int), np.array(T_final, float), 'r')
-# plt.plot(np.array(i, int), np.linspace(1, 1, 8), 'g')
-# plt.ylabel( "Final T / T_th" )
+plt.plot(np.array(i, int), np.array(T_final, float), '.r', label="T_final")
+plt.plot(np.array(i, int), np.array(T_final, float), 'r')
+plt.plot(np.array(i, int), np.linspace(1, 1, len(T_final)), 'g')
+plt.ylabel( "Final T / T_th" )
 
-plt.plot(np.array(i, int), np.array(logT_final, float), '.r', label="logT_final")
-plt.plot(np.array(i, int), np.array(logT_final, float), 'r')
-plt.plot(np.array(i, int), np.linspace(0, 0, 8), 'g')
-plt.ylabel( "ln( Final T / T_th )" )
-
+plt.title("Конечная температура от log скорости стенки")
 plt.xlabel( "log2( Vel / Vmol )" )
-
 
 plt.grid()
 plt.legend()
 
-# plt.savefig(f"io/logT_final.png")
+plt.savefig(f"io/T_final.png")
 plt.show()
